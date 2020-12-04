@@ -1,1 +1,43 @@
-Ini adalah k-means
+K-MEANS Clustering
+
+Author :
+@Fakhri Ilham Pradhana - 18523060
+@ Muhammad Farhan - <NIM>
+
+Dataset yang dipilih adalah "mall_customers" 
+```{r}
+library(readxl)
+mall_customers <- read_excel("Mall_Customers.xlsx")
+data("mall_customers")
+summary(mall_customers)
+
+```
+
+STEP 2 :
+Lorem ipsum dolor sit amet
+```{r}
+mall_customers.new <- mall_customers[,3:5]
+mall_customers.class <- mall_customers[, 2]
+set.seed(1356)
+result <- kmeans(mall_customers.new, 2) 
+```
+
+
+STEP 3 :
+```{r}
+par(mfrow=c(2,2), mar=c(5,4,2,2))
+plot(mall_customers.new[, c(1,2, 3)], col=result$cluster)
+plot(mall_customers.new[, c(1,2, 3)], col=mall_customers)
+```
+
+
+STEP 4:
+kita mengevaluasi cost function yang disebut sebagai distortion function. Di sini nilai distortion pada iterasi terakhir dapat dilihat melalui tot.withinss.
+
+```{r}
+
+```
+
+
+
+
