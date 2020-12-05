@@ -1,1 +1,61 @@
-Ini adalah Hierarchical
+
+HIERARCHIAL Clustering
+
+Author :
+@Fakhri Ilham Pradhana - 18523060
+@ Muhammad Farhan - <NIM>
+
+
+
+STEP 1 :
+Import data dari file xlsx
+```{r}
+library(readxl)
+mall_customers_hier <- read_excel("Mall_Customers.xlsx")
+data("mall_customers")
+colnames(mall_customers_hier)[4] <- "annual_income"
+colnames(mall_customers_hier)[5] <- "score_spending"
+mall_customers_hier
+```
+
+
+STEP 2 :
+```{r}
+summary(mall_customers_hier)
+```
+
+STEP 3:
+```{r}
+df <- data.frame(States=rownames(mall_customers_hier), mall_customers_hier)
+par(las=2) # make label text perpendicular to axis
+par(mar=c(5,8,4,2)) # increase y-axis margin.
+
+
+barplot(df$Age, names.arg = df$Gender, horiz = TRUE, cex.names = 0.5, xlab = "Age based on gender")
+```
+
+
+```{r}
+barplot(df$annual_income, names.arg = df$Gender, horiz = TRUE, cex.names = 0.5, xlab = "Annual income based on gender")
+```
+
+```{r}
+barplot(df$Age, names.arg = df$Gender, horiz = TRUE, cex.names = 0.5, xlab = "Score Spending based on gender")
+```
+
+
+STEP 4:
+```{r}
+df <- scale(df[, 4:6])
+d <- dist(df, method = "euclidean")
+clusters <- hclust(d, method = "complete" )
+plot(clusters, cex = 0.6, hang = -1)
+```
+
+
+STEP 5:
+```{r}
+plot(clusters, cex = 0.6, hang = -1)
+rect.hclust(clusters, k = 4, border = 2:5)
+```
+
