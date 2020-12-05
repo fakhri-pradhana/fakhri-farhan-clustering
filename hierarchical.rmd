@@ -1,15 +1,15 @@
-
-HIERARCHIAL Clustering
-
-Author :
-@Fakhri Ilham Pradhana - 18523060
-@ Muhammad Farhan - <NIM>
+---
+title : "Hierarchial Clustering"
+output : html_document
+author : "Fakhri Ilham (18523060)"
+author : "Muhammad Farhan (18523114)"
+---
 
 
 Pada Hierarchial clustering kami mencoba menggunakan data Mall customers
 Data ini berisi sebaran Age, annual_income dan score_spending yang dapat diclustring berdasar Gender
 
-STEP 1 :
+##STEP 1 :
 Import data dari file xlsx
 ```{r}
 library(readxl)
@@ -26,7 +26,7 @@ mall_customers_hier
 summary(mall_customers_hier)
 ```
 
-STEP 2 :
+##STEP 2 :
 Baris 1 membuat sebuah data frame dari data set mall_customers_hier dan 
 menambahkan satu kolom berisi gender customers
 
@@ -55,7 +55,7 @@ barplot(df$Age, names.arg = df$Gender, horiz = TRUE, cex.names = 0.5, xlab = "Sc
 ```
 
 
-STEP 3:
+##STEP 3:
 Hierarchial clustering kali ini akan menggunakan fungsi hclust. Clustering juga hanya akan menggunakan 3 variable
 (Age, annual_income, dan score_spending)
 
