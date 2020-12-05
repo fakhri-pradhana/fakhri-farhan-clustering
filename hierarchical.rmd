@@ -6,6 +6,8 @@ Author :
 @ Muhammad Farhan - <NIM>
 
 
+Pada Hierarchial clustering kami mencoba menggunakan data Mall customers
+Data ini berisi sebaran Age, annual_income dan score_spending yang dapat diclustring berdasar Gender
 
 STEP 1 :
 Import data dari file xlsx
@@ -19,18 +21,27 @@ mall_customers_hier
 ```
 
 
-STEP 2 :
+
 ```{r}
 summary(mall_customers_hier)
 ```
 
-STEP 3:
+STEP 2 :
+Baris 1 membuat sebuah data frame dari data set mall_customers_hier dan 
+menambahkan satu kolom berisi gender customers
+
+Baris 2 untuk mengubah orientasi label pada sumbu vertikal sehingga daapt terbaca secara horizontal
+
+Baris 3 untuk mengatur margin, sehingga possi barplot lebih di tengah
+
+Baris 4 membuat barplot untuk variabel Age
+
+baris-barise selanjutnya membuat barplot untuk variabel lain.
+
 ```{r}
 df <- data.frame(States=rownames(mall_customers_hier), mall_customers_hier)
 par(las=2) # make label text perpendicular to axis
 par(mar=c(5,8,4,2)) # increase y-axis margin.
-
-
 barplot(df$Age, names.arg = df$Gender, horiz = TRUE, cex.names = 0.5, xlab = "Age based on gender")
 ```
 
@@ -44,7 +55,18 @@ barplot(df$Age, names.arg = df$Gender, horiz = TRUE, cex.names = 0.5, xlab = "Sc
 ```
 
 
-STEP 4:
+STEP 3:
+Hierarchial clustering kali ini akan menggunakan fungsi hclust. Clustering juga hanya akan menggunakan 3 variable
+(Age, annual_income, dan score_spending)
+
+Sehingga:
+Baris 1 : menghilangkan kolom Gender
+Baris 2 : Fungsi hclust menerima matriks jarak (dissimilarity meassure dari setiap pasang variabel), maka kita menghitung matriks tersebut lewat
+Baris 3 : kita melakukan hiearchical clustering dengan metode complete linkage 
+(sebenarnya bisa pakai yang lain : single, average dkk)
+Baris 4: membuat plot dendrogram dari hasil clustering; parameter cex emngatur besar font untuk label pada sumbu x, 
+hang mengatur posisi label terhadap sumbu y.
+
 ```{r}
 df <- scale(df[, 4:6])
 d <- dist(df, method = "euclidean")
@@ -52,7 +74,7 @@ clusters <- hclust(d, method = "complete" )
 plot(clusters, cex = 0.6, hang = -1)
 ```
 
-
+Kami juga menggunakan fungsi rect.hclust() untuk menggambar kotak pada sejumlah klaster yang kita inginkan. Sebagai contoh, kita ingin melihat 4 klaster dari hasil clustering di atas. Maka kita set k=4. Parameter border mengatur warna kotak dari setiap klaster.
 STEP 5:
 ```{r}
 plot(clusters, cex = 0.6, hang = -1)
