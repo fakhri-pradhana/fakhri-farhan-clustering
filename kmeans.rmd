@@ -5,6 +5,10 @@ Author :
 @ Muhammad Farhan - <NIM>
 
 Dataset yang dipilih adalah "mall_customers" 
+Kami mencoba melakukan clustering variable annual_income dan score_spending terhadap Gender
+
+STEP 1 :
+import data dari xlsx
 ```{r}
 library(readxl)
 mall_customers <- read_excel("Mall_Customers.xlsx")
@@ -13,8 +17,14 @@ summary(mall_customers)
 
 ```
 
-STEP 2 :
-Lorem ipsum dolor sit amet
+STEP 2 : 
+untuk dapat melakukan clustering, kita asumsikan bahwa kita menghilangkan variable "Gender"[col 2]
+dari dataset utama (mall_customers) untuk dimasukkan ke variabel baru (mall_customers.class)
+kemudian kita juga membuat variable mall_customers.new untuk menampung data yang hendak di clustering
+
+data yang dipilih untuk dilakukan clustering adalah : annual_income dan score_spending
+
+lalu dilakukan clustering dengan menentukkan cluster = 2
 ```{r}
 mall_customers.new <- mall_customers[,4:5]
 mall_customers.class <- mall_customers[, 2]
@@ -23,7 +33,8 @@ result <- kmeans(mall_customers.new, 2)
 ```
 
 
-STEP 3 :
+STEP 3 : 
+memvisualisasikan hasil clustering dengan plot
 ```{r}
 par(mfrow=c(2,2), mar=c(5,4,2,2))
 plot(mall_customers.new[, c(1,2)], col=result$cluster)
@@ -42,14 +53,15 @@ result$tot.withinss
 STEP 5:
 Untuk melihat nilai apa saja yang dikembalikan oleh fungsi kmeans, dapat dilihat melalui
 
-
 ```{r}
 attributes(result)$names
 ```
 
 
 STEP 6:
-Menggunakan ggplot
+visualisasi dengan menggunakan ggplot
+disini kami melakukan rename column untuk memudahkan pemanggilan column
+
 ```{r}
 mall_customers.new$cluster <- factor(result$cluster)
 centers <- as.data.frame(result$centers)
