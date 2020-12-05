@@ -16,7 +16,7 @@ summary(mall_customers)
 STEP 2 :
 Lorem ipsum dolor sit amet
 ```{r}
-mall_customers.new <- mall_customers[,3:5]
+mall_customers.new <- mall_customers[,4:5]
 mall_customers.class <- mall_customers[, 2]
 set.seed(1356)
 result <- kmeans(mall_customers.new, 2) 
@@ -26,8 +26,8 @@ result <- kmeans(mall_customers.new, 2)
 STEP 3 :
 ```{r}
 par(mfrow=c(2,2), mar=c(5,4,2,2))
-plot(mall_customers.new[, c(1,2, 3)], col=result$cluster)
-plot(mall_customers.new[, c(1,2, 3)], col=mall_customers)
+plot(mall_customers.new[, c(1,2)], col=result$cluster)
+plot(mall_customers.new[, c(1,2)], col=mall_customers)
 ```
 
 
@@ -35,8 +35,38 @@ STEP 4:
 kita mengevaluasi cost function yang disebut sebagai distortion function. Di sini nilai distortion pada iterasi terakhir dapat dilihat melalui tot.withinss.
 
 ```{r}
+result$tot.withinss
+```
+
+
+STEP 5:
+Untuk melihat nilai apa saja yang dikembalikan oleh fungsi kmeans, dapat dilihat melalui
+
+
+```{r}
+attributes(result)$names
+```
+
+
+STEP 6:
+Menggunakan ggplot
+```{r}
+mall_customers.new$cluster <- factor(result$cluster)
+centers <- as.data.frame(result$centers)
+colnames(mall_customers.new)[1] <- "annual_income"
+colnames(mall_customers.new)[2] <- "score_spending"
+
+colnames(centers)[1] <- "annual_income"
+colnames(centers)[2] <- "score_spending"
+library(ggplot2)
+ggplot() + 
+  geom_point(data=mall_customers.new, aes(x=annual_income, y=score_spending,color=cluster))  +
+  geom_point(data=centers, aes(x=annual_income, y=score_spending, color="Center"), 
+             size=52, alpha=.3, show.legend = FALSE)
 
 ```
+
+
 
 
 
