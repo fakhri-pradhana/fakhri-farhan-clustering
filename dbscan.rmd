@@ -28,17 +28,10 @@ plot(df, pch=16)
 
 
 
-STEP 3:
-Kita melakukan clustering, dengan db sebesar 5 untuk mengelompokkan beberapa kluster yang berjumlah 5
-```{r}
-library(cluster)
-set.seed(123)
-km.res <- kmeans(df, 5, nstart = 25)
-fviz_cluster(km.res, df, frame = FALSE, geom = "point")
 
 ```
 
-STEP 4:
+STEP 3:
 Disini kita menggunakan fungsi dbscan() dari package "fpc" dan melihat sebaran kluster yang berjumlah 5
 ```{r}
 library("fpc")
@@ -48,32 +41,32 @@ plot(db, df, main = "DBSCAN", frame = FALSE)
 ```
 
 
-STEP 5:
+STEP 4:
 ```{r}
 library("factoextra")
 fviz_cluster(db, df, stand = FALSE, frame = FALSE, geom = "point")
 ```
 
-STEP 6
+STEP 5
 hasil dari running data menghasilkan jumlah border, jumlah core point dan jumlah total dari border dan seed dan dari data disitu menunjukkan bahwa jumlah terbanyak yaitu 79 dan paling sedikit 3
 ```{r}
 print(db)
 ```
 
 
-STEP 7
+STEP 6
 dari hasil running banyak sekali hasil noise dari kumpulan data tersebut
 ```{r}
 db$cluster
 ```
 
-STEP 8   
+STEP 7
 ```{r}
 library(dbscan)
 
 ```
 
-STEP 9
+STEP 8
 dari plot dibawah bahwa jumlah mintPts adalah ketika jarak = 0.15
 ```{r}
 kNNdistplot(df, k =  5)
