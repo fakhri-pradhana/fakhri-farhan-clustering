@@ -5,70 +5,82 @@ author : "Fakhri Ilham (18523060)"
 author : "Muhammad Farhan (18523099)"
 ---
 
-## Pada DBSCAN 
 
 ## Importing the libraries
 ## STEP 1:
+## Pertama mengambil melakukan import data dari file mall_customers.xlsx dan mengambil variabel Spending Score untuk dibandingkan dengan K-Means
+
 ```{r}
 library(readxl)
 library(factoextra)
 mall_customers <- read_excel("Mall_Customers.xlsx")
 data("mall_customers")
-df <- mall_customers[, 3:2]
+df <- mall_customers[, 4:5]
 ```
 
-## Ploting data
 ## STEP 2:
+## Ploting data
+## Kemudian melakukan ploting data dan pemetaan dengan menggunakan pch 16 yang memiliki fungsi untuk membuat plot yang berbentuk lingkaran
 ```{r}
 plot(df, pch=16)
 
 ```
 
+
+
 ## STEP 3:
 ## Kita melakukan clustering, bahwa kita akan melakukan 
 ```{r}
+
+library(cluster)
 set.seed(123)
 km.res <- kmeans(df, 5, nstart = 25)
-fviz_cluster(km.res, df, frame = FALSE, geom = "point")
+fviz_cluster(km.res, geom = "point", ellipse.type = "norm")
 
 ```
 
-## STEP 4:
-## ss
+
 ```{r}
-install.packages("fpc")
+db$cluster
+```
+
+## STEP 4:
+## Disini kita menggunakan fungsi dbscan() dari package "fpc" dengan paramter
+```{r}
 library("fpc")
 set.seed(123)
-db <- dbscan(df, eps = 0.15, MinPts = 5)
-plot(db, df, main = "DBSCAN", frame = FALSE)
-print(db)
+db <- dbscan(df, eps = 5, MinPts = 3)
+plot(3, 5, main = "DBSCAN", frame = FALSE)
 ```
 
 
-## STEP 4:
-## ss
+## STEP 5:
 ```{r}
 library("factoextra")
 fviz_cluster(db, df, stand = FALSE, frame = FALSE, geom = "point")
 ```
 
-## STEP 5
+## STEP 6
+## hasil dari running data menghasilkan jumlah border, jumlah core point dan jumlah total dari border dan seed dan dari data disitu menunjukkan bahwa jumlah terbanyak yaitu 79 dan paling sedikit 3
 ```{r}
 print(db)
 ```
 
 
-## STEP 6
+## STEP 7
+## dari hasil running banyak sekali hasil noise dari kumpulan data tersebut
 ```{r}
 db$cluster
 ```
 
-## STEP 7   
+## STEP 8   
 ```{r}
 library(dbscan)
+
 ```
 
-## STEP 8
+## STEP 9
+## dari plot dibawah bahwa jumlah mintPts adalah ketika jarak = 0.15
 ```{r}
 kNNdistplot(df, k =  5)
 abline(h = 0.15, lty = 2)
