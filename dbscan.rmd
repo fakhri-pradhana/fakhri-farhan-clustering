@@ -29,13 +29,13 @@ plot(df, pch=16)
 
 
 ## STEP 3:
-## Kita melakukan clustering, bahwa kita akan melakukan 
+## Kita melakukan clustering, bahwa kita akan melakukan dengan db 5 
 ```{r}
 
 library(cluster)
 set.seed(123)
 km.res <- kmeans(df, 5, nstart = 25)
-fviz_cluster(km.res, geom = "point", ellipse.type = "norm")
+fviz_cluster(db, df, stand = FALSE, frame = FALSE, geom = "point")
 
 ```
 
@@ -45,7 +45,7 @@ db$cluster
 ```
 
 ## STEP 4:
-## Disini kita menggunakan fungsi dbscan() dari package "fpc" dengan paramter
+## Disini kita menggunakan fungsi dbscan() dari package "fpc" dengan parameter
 ```{r}
 library("fpc")
 set.seed(123)
