@@ -29,28 +29,22 @@ plot(df, pch=16)
 
 
 STEP 3:
-Kita melakukan clustering, bahwa kita akan melakukan dengan db 5 
+Kita melakukan clustering, dengan db sebesar 5 untuk mengelompokkan beberapa kluster yang berjumlah 5
 ```{r}
-
 library(cluster)
 set.seed(123)
 km.res <- kmeans(df, 5, nstart = 25)
-fviz_cluster(db, df, stand = FALSE, frame = FALSE, geom = "point")
+fviz_cluster(km.res, df, frame = FALSE, geom = "point")
 
-```
-
-
-```{r}
-db$cluster
 ```
 
 STEP 4:
-Disini kita menggunakan fungsi dbscan() dari package "fpc" dengan parameter
+Disini kita menggunakan fungsi dbscan() dari package "fpc" dan melihat sebaran kluster yang berjumlah 5
 ```{r}
 library("fpc")
 set.seed(123)
-db <- dbscan(df, eps = 5, MinPts = 3)
-plot(3, 5, main = "DBSCAN", frame = FALSE)
+db <- dbscan(df, eps = 0.15, MinPts = 5)
+plot(db, df, main = "DBSCAN", frame = FALSE)
 ```
 
 
