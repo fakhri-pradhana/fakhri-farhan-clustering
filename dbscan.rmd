@@ -1,8 +1,7 @@
 ---
 title : "DBSCAN"
 output : html_document
-author : "Fakhri Ilham (18523060)"
-author : "Muhammad Farhan (18523099)"
+author : "Fakhri Ilham (18523060) & Muhammad Farhan (18523099)"
 ---
 
 
@@ -27,10 +26,6 @@ plot(df, pch=16)
 ```
 
 
-
-
-```
-
 STEP 3:
 Disini kita menggunakan fungsi dbscan() dari package "fpc" dan melihat sebaran kluster yang berjumlah 5
 ```{r}
@@ -43,9 +38,14 @@ plot(db, df, main = "DBSCAN", frame = FALSE)
 
 STEP 4:
 ```{r}
+install.packages("ggpubr",
+                 repos = c("https://cran.rediris.org/", "https://cloud.r-project.org/"),
+                 dependencies = TRUE)
 library("factoextra")
-fviz_cluster(db, df, stand = FALSE, frame = FALSE, geom = "point")
+
 ```
+
+
 
 STEP 5
 hasil dari running data menghasilkan jumlah border, jumlah core point dan jumlah total dari border dan seed dan dari data disitu menunjukkan bahwa jumlah terbanyak yaitu 79 dan paling sedikit 3
