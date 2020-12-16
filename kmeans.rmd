@@ -1,7 +1,7 @@
 ---
-output:
-  html_document: default
-  word_document: default
+title : "K-Means Clustering"
+output : html_document
+author : "Fakhri Ilham (18523060) & Muhammad Farhan (18523114)"
 ---
 K-MEANS Clustering
 
@@ -12,7 +12,7 @@ Author :
 Dataset yang dipilih adalah "mall_customers" 
 Kami mencoba melakukan clustering variable annual_income dan score_spending terhadap Gender
 
-STEP 1 :
+#STEP 1 :
 import data dari xlsx
 ```{r}
 library(readxl)
@@ -22,7 +22,7 @@ summary(mall_customers)
 
 ```
 
-STEP 2 : 
+#STEP 2 : 
 untuk dapat melakukan clustering, kita asumsikan bahwa kita menghilangkan variable "Gender"[col 2]
 dari dataset utama (mall_customers) untuk dimasukkan ke variabel baru (mall_customers.class)
 kemudian kita juga membuat variable mall_customers.new untuk menampung data yang hendak di clustering
@@ -38,7 +38,7 @@ result <- kmeans(mall_customers.new, 2)
 ```
 
 
-STEP 3 : 
+#STEP 3 : 
 memvisualisasikan hasil clustering dengan plot
 ```{r}
 par(mfrow=c(2,2), mar=c(5,4,2,2))
@@ -47,7 +47,7 @@ plot(mall_customers.new[, c(1,2)], col=mall_customers)
 ```
 
 
-STEP 4:
+#STEP 4:
 kita mengevaluasi cost function yang disebut sebagai distortion function. Di sini nilai distortion pada iterasi terakhir dapat dilihat melalui tot.withinss.
 
 ```{r}
@@ -55,7 +55,7 @@ result$tot.withinss
 ```
 
 
-STEP 5:
+#STEP 5:
 Untuk melihat nilai apa saja yang dikembalikan oleh fungsi kmeans, dapat dilihat melalui
 
 ```{r}
@@ -63,7 +63,7 @@ attributes(result)$names
 ```
 
 
-STEP 6:
+#STEP 6:
 visualisasi dengan menggunakan ggplot
 disini kami melakukan rename column untuk memudahkan pemanggilan column
 

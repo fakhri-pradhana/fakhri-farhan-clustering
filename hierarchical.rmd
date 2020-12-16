@@ -1,8 +1,7 @@
 ---
 title : "Hierarchial Clustering"
 output : html_document
-author : "Fakhri Ilham (18523060)"
-author : "Muhammad Farhan (18523114)"
+author : "Fakhri Ilham (18523060) & Muhammad Farhan (18523114)"
 ---
 
 
@@ -14,10 +13,9 @@ Import data dari file xlsx
 ```{r}
 library(readxl)
 mall_customers_hier <- read_excel("Mall_Customers.xlsx")
-data("mall_customers")
 colnames(mall_customers_hier)[4] <- "annual_income"
 colnames(mall_customers_hier)[5] <- "score_spending"
-mall_customers_hier
+show(mall_customers_hier) 
 ```
 
 

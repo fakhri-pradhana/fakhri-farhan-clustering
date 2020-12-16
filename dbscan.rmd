@@ -10,6 +10,7 @@ STEP 1:
 Pertama mengambil melakukan import data dari file mall_customers.xlsx dan mengambil variabel Spending Score untuk dibandingkan dengan K-Means
 
 ```{r}
+install.packages("factoextra")
 library(readxl)
 library(factoextra)
 mall_customers <- read_excel("Mall_Customers.xlsx")
