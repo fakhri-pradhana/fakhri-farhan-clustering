@@ -9,7 +9,7 @@ FACTOR ANALISYS
 
 LANGKAH 1 :
 Melakukan import dataset dengan menggunakan data prediksi FIFA 2018 Man of the Match
-melakukan replacement nilai kolom NA menjadi 0 dengan fungsi is.na()
+melakukan replacement nilai kolom NA menjadi 0 dengan fungsi `is.na()`
 ```{r}
 #install.packages('psych')
 library(psych)
@@ -29,7 +29,10 @@ KMO(df_corr)
 ```
 
 LANGKAH 3 :
-MSA (measure of sampling adequacy) is a measure for exclusion of variables. If MSA < 0.5 the variable should be dropped. Variables with MSA > 0.6 are suitable, variables with MSA > 0.8 very well suited for factor analysis. The result tells us to drop "On.Target","Off.Target","Blocked", "Offsides", "Distance.Covered.Kms", "Yellow.Red", "Red", "first_goal" variables
+MSA (measure of sampling adequacy) is a measure for exclusion of variables. 
+If MSA < 0.5 the variable should be dropped.
+Variables with MSA > 0.6 are suitable, variables with MSA > 0.8 very well suited for factor analysis.
+The result tells us to drop "On.Target","Off.Target","Blocked", "Offsides", "Distance.Covered.Kms", "Yellow.Red", "Red", "first_goal" variables
 ```{r}
 df1_fifaRes <- fifa_results[,c(1:3, 7, 9:12, 14:15, 17)]
 head(df1_fifaRes)
@@ -51,6 +54,7 @@ round(df1_corr, 2) # Correlation matrix in table form
 LANGKAH 5 :
 ```{r}
 library('GPArotation')
+library(psych)
 nfactors <- 4 # Based on the screeplot suggestion
 nvars <- dim(df1_corr)[1]
 factors <- fa(r = df1_corr, nfactors = nfactors, rotate = "Varimax")
@@ -60,6 +64,7 @@ factors
 LANGKAH N :
 
 ```{r}
+library(psych)
 modelFA <- fa(r = factors, nfactors = 4, rotate = "varimax", fm="minres")
 modelFA$loadings
 ```
