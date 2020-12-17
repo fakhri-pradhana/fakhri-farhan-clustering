@@ -1,0 +1,56 @@
+
+yang diambil ada 5 fitur:
+  
+```{r}
+library(psych)
+filteredFifa <- myData[,c(5, 15, 14, 10, 6)]
+
+head(filteredFifa)
+```
+
+```{r}
+install.packages('caret', dependencies = TRUE)
+library(caret)
+```
+
+```{r}
+library(caret)
+cobaIntrain <- createDataPartition(y=filteredFifa$Ball.Possession.., p=0.7, list=FALSE)
+cobaTraining <- filteredFifa[cobaIntrain,]
+cobaTesting <- filteredFifa[-cobaIntrain,]
+
+dim(cobaTraining)
+dim(cobaTesting)
+
+show(cobaTraining)
+show(cobaTesting)
+```
+
+
+```{r}
+library(caret)
+set.seed(132)
+cobaTraining[["Ball.Possession.."]] = factor(cobaTraining[["Ball.Possession.."]])
+trctrlCoba <- trainControl(method = "repeatedcv", number=2, repeats = 3)
+
+svm_linearCoba <- train(Ball.Possession.. ~., data = cobaTraining, method = "svmLinear", 
+                        trControl = trctrlCoba,
+                        preProcess = c("center", "scale"),
+                        tuneLength = 10)
+
+svm_linearCoba
+```
+
+```{r}
+test_predCoba <- predict(svm_linearCoba, newdata =cobaTesting)
+test_predCoba
+```
+
+
+```{r}
+
+svm_linearCoba$resample
+confusionMatrix(svm_linearCoba)
+
+```
+
