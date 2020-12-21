@@ -4,12 +4,21 @@ output : html_document
 author : "Fakhri Ilham (18523060) & Muhammad Farhan (18523099)"
 ---
 
-FACTOR ANALISYS
+## FACTOR ANALISYS dan SVM
 
+**dataset yang digunakan adalah FIFA 2018 Man of the Match**
 
-LANGKAH 1 :
-Melakukan import dataset dengan menggunakan data prediksi FIFA 2018 Man of the Match
-melakukan replacement nilai kolom NA menjadi 0 dengan fungsi `is.na()`
+**data ini memiliki karakteristik :**
+
+1. tersusun dari 128 baris dan 27 fitur
+2. tersusun atas variable dengan data string dan numerik
+3. terdapat data yang kosong (akan dilakukan preprocessing untuk mengganti nilai menjadi 0)
+
+**LANGKAH 1 :**
+
+* Melakukan import dataset dengan membaca csv yang berlokasi dalam satu folder proyek
+* mereduksi fitur dengan feature selection `c(4:20, 22)`
+* melakukan replacement nilai kolom NA menjadi 0 dengan fungsi `is.na()`
 ```{r}
 #install.packages('psych')
 library(psych)
@@ -20,42 +29,81 @@ fifa_results$X1st.Goal[is.na(fifa_results$X1st.Goal)] <- 0
 head(fifa_results)
 ```
 
-LANGKAH 2 :
-Membuat matriks korelasi dan
-Kaiser-Meyer-Olkin factor adequacy
+**LANGKAH 2 :**
+
+Cari tahu variabel mana yang dapat dipertimbangkan untuk FA:
+
+Untuk mengetahui variable mana yang paling relevan kita dapat menggunakan Tes Kaiser-Meyer-Olkin (KMO). 
+Fungsi `KMO()` dari package `psych` akan memeriksa apakah suatu variabel cocok untuk Factor Analysis
+
+* Membuat matriks korelasi dengan fungsi `cor(fifa_results)`
+* Menggunakan fungsi `KMO()` untuk memeriksa kecocokan variable
 ```{r}
 df_corr <- cor(fifa_results)
 KMO(df_corr)
 ```
 
-LANGKAH 3 :
-MSA (measure of sampling adequacy) is a measure for exclusion of variables. 
-If MSA < 0.5 the variable should be dropped.
-Variables with MSA > 0.6 are suitable, variables with MSA > 0.8 very well suited for factor analysis.
-The result tells us to drop "On.Target","Off.Target","Blocked", "Offsides", "Distance.Covered.Kms", "Yellow.Red", "Red", "first_goal" variables
+**Catatan :**
+
+* MSA (ukuran kecukupan sampling) adalah ukuran untuk mengecualikan variabel. 
+* Jika MSA <0,5 variabel akan tereliminasi. 
+* Variabel dengan MSA> 0.6 akan cocok, 
+* variabel dengan MSA> 0.8 akan sangat cocok untuk Factor Analysis 
+
+Dengan melakukan langkah diatas kita dapat mengeliminasi variabel :
+
+* "On.Target", 
+* "Off.Target", 
+* "Blocked", 
+* "Offsides", 
+* "Distance.Covered.Kms", 
+* "Yellow.Red", 
+* "Red", 
+* "first_goal"
+
+**LANGKAH 3 :**
+
+Mengeliminasi variable yang tidak dibutuhkan
+
 ```{r}
 df1_fifaRes <- fifa_results[,c(1:3, 7, 9:12, 14:15, 17)]
 head(df1_fifaRes)
 ```
 
-LANGKAH 4 :
+**LANGKAH 4 :**
+
+* Membuat matriks korelasi dengan variable yang sudah dipilih dari `df1_fifaRes`
+* Memberi warna untuk mempermudah visualisasi 
+* Tambahkan koefisien korelasi dengan code `addCoef.col = "black"`
+* Memberi warna label dan rotasinya dengan ` tl.col="black", tl.srt=45`
+* sembunyikan koefisien korelasi pada diagonal utama `diag=FALSE`
+* Memvisualisasikan korelasi matriks kedalam bentuk tabel `round(df1_corr, 2)`
+
 ```{r}
 library(corrplot)
-df1_corr <- cor(df1_fifaRes) # Create a correlation matrix
+df1_corr <- cor(df1_fifaRes) 
 col <- colorRampPalette(c("#BB4444", "#EE9988", "#FFFFFF", "#77AADD", "#4477AA"))
 corrplot(round(df1_corr, 2), method="color", col=col(200),  
          type="upper", order="hclust", 
-         addCoef.col = "black", # Add coefficient of correlation
-         tl.col="black", tl.srt=45, #Text label color and rotation
-         diag=FALSE) # hide correlation coefficient on the principal diagonal
+         addCoef.col = "black", 
+         tl.col="black", tl.srt=45,
+         diag=FALSE)
 round(df1_corr, 2) # Correlation matrix in table form
 ```
 
-LANGKAH 5 :
+Setelah melakukan visualisasi matriks correlation, 
+kita tahu berapa banyak faktor yang perlu digunakan dari grafik yang diberikan di atas (yaitu 4 faktor). 
+Analisis faktor akan dilakukan dengan fungsi `fa()` dari package `psych`.
+Saat parameter dilewatkan: matriks korelasi, jumlah faktor, dan metode rotasi.
+
+**LANGKAH 5 :**
+
+* Menggunakan library `GPArotation` dan `psych`
+* Meng-assign `nfactors` sebagai 4 berdasarkan rekomendasi dari matriks korelasi dari langkah sebelumnya
 ```{r}
 library('GPArotation')
 library(psych)
-nfactors <- 4 # Based on the screeplot suggestion
+nfactors <- 4 
 nvars <- dim(df1_corr)[1]
 factors <- fa(r = df1_corr, nfactors = nfactors, rotate = "Varimax")
 factors
@@ -64,9 +112,9 @@ factors
 LANGKAH N :
 
 ```{r}
-library(psych)
-modelFA <- fa(r = factors, nfactors = 4, rotate = "varimax", fm="minres")
-modelFA$loadings
+##library(psych)
+#modelFA <- fa(r = factors, nfactors = 4, rotate = "varimax", fm="minres")
+#modelFA$loadings
 ```
 
 
@@ -120,4 +168,49 @@ e1 <- e1 + scale_x_continuous(breaks = seq(1, 10, 1))
 e1
 ```
 
+
+  
+```{r}
+library(psych)
+filteredFifa <- myData[,c(5, 15, 14, 10, 6)]
+
+head(filteredFifa)
+```
+
+```{r}
+library(caret)
+cobaIntrain <- createDataPartition(y=filteredFifa$Ball.Possession.., p=0.7, list=FALSE)
+cobaTraining <- filteredFifa[cobaIntrain,]
+cobaTesting <- filteredFifa[-cobaIntrain,]
+
+dim(cobaTraining)
+dim(cobaTesting)
+
+show(cobaTraining)
+show(cobaTesting)
+```
+
+```{r}
+library(caret)
+set.seed(132)
+cobaTraining[["Ball.Possession.."]] = factor(cobaTraining[["Ball.Possession.."]])
+trctrlCoba <- trainControl(method = "repeatedcv", number=2, repeats = 3)
+
+svm_linearCoba <- train(Ball.Possession.. ~., data = cobaTraining, method = "svmLinear", 
+                        trControl = trctrlCoba,
+                        preProcess = c("center", "scale"),
+                        tuneLength = 10)
+
+svm_linearCoba
+```
+
+```{r}
+test_predCoba <- predict(svm_linearCoba, newdata =cobaTesting)
+test_predCoba
+```
+
+```{r}
+svm_linearCoba$resample
+confusionMatrix(svm_linearCoba)
+```
 

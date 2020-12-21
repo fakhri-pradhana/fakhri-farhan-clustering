@@ -1,5 +1,4 @@
 
-yang diambil ada 5 fitur:
   
 ```{r}
 library(psych)
