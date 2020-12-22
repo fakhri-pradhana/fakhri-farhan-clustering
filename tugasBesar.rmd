@@ -30,7 +30,7 @@ fifa_results$X1st.Goal[is.na(fifa_results$X1st.Goal)] <- 0
 head(fifa_results)
 ```
 
-## **LANGKAH 2 (FA):**
+### **LANGKAH 2 (FA):**
 
 Cari tahu variabel mana yang dapat dipertimbangkan untuk FA:
 
@@ -62,7 +62,7 @@ Dengan catatan diatas kita dapat mengeliminasi variabel :
 * "Red", 
 * "first_goal"
 
-## **LANGKAH 3 (FA):**
+### **LANGKAH 3 (FA):**
 
 Mengeliminasi variable yang tidak dibutuhkan dengan memilih fitur `c(1:3, 7, 9:12, 14:15, 17)`
 
@@ -71,7 +71,7 @@ df1_fifaRes <- fifa_results[,c(1:3, 7, 9:12, 14:15, 17)]
 head(df1_fifaRes)
 ```
 
-## **LANGKAH 4 (FA):**
+### **LANGKAH 4 (FA):**
 
 * Membuat matriks korelasi dengan variable yang sudah dipilih dari `df1_fifaRes`
 * Memberi warna untuk mempermudah visualisasi 
@@ -97,7 +97,7 @@ kita tahu berapa banyak faktor yang perlu digunakan dari grafik yang diberikan d
 Analisis faktor akan dilakukan dengan fungsi `fa()` dari package `psych`.
 Saat *passing parameter* : matriks korelasi, jumlah faktor, dan metode rotasi.
 
-## **LANGKAH 5 (FA):**
+### **LANGKAH 5 (FA):**
 
 * Menggunakan library `GPArotation` dan `psych`
 * Meng-assign `nfactors` sebagai 4 berdasarkan rekomendasi dari matriks korelasi dari langkah sebelumnya
@@ -111,7 +111,7 @@ factors
 ```
 
 
-## **LANGKAH 6 (FA):**
+### **LANGKAH 6 (FA):**
 
 Melakukan plotting untuk mendapatkan visualisasi FA
 
@@ -129,7 +129,7 @@ Setelah melakukan plotting kita mendapatkan bahwa :
 * **Faktor 3** : Peraturan permainan ('Fouls Committed', dan 'Yellow Card')
 * **Faktor 4** : Lain-lain ( 'Free Kicks' ,dan 'Saves') dan memiliki nilai negatif
 
-## **LANGKAH 7 (FA):**
+### **LANGKAH 7 (FA):**
 ```{r}
 plot(load, type="n")
 text(load,labels=names(factors),cex=.7) 
@@ -137,7 +137,7 @@ text(load,labels=names(factors),cex=.7)
 
 Terlihat dalam plot, sebaran factor loading yang nilainya sangat variatif bahkan ada yang bernilai negatif
 
-## **LANGKAH 8 (FA):**
+### **LANGKAH 8 (FA):**
 
 Untuk dapat menentukan jumlah faktor, kita dapat menggunakan bantuan scree plot apabila kita tida memiliki dasar ilmiah untuk menentukan jumlah faktor. 
 
@@ -152,7 +152,7 @@ scree.plot(df1_corr)
 * hal ini juga telah dibuktikan dalam plotting FA yang menunjukkan bahwa faktor ke-4 sangat sedikit menunjukkan hubungannya dengan fitur-fitur terkait, bahkan ada yang bernilai negatif.
 
 
-## **LANGKAH 9 (SVM) :**
+### **LANGKAH 9 (SVM) :**
 
 Membuat variable R baru dengan nama `filteredFifa`, dengan memasukkan beberapa fitur dari dataset berbekal pengetahuan yang didapatkan dari FA
 
@@ -165,18 +165,22 @@ filteredFifa <- myData[,c(5, 10, 17, 12)]
 head(filteredFifa)
 ```
 
-## **LANGKAH 10 (SVM) :**
+### **LANGKAH 10 (SVM) :**
 
-### **Melakukan training dan testing terhadap fitur _Ball.Possesion_**
+#### **Melakukan training dan testing terhadap fitur _Ball.Possesion_**
 
-* Menggunakan library `caret` yang merupakan package untuk *Classification and Regression Training*
-* Melakukan data splitting dengan komposisi 70% training dan 30% testing dengan method `createDataPartition()`
-* Parameter method `createDataPartition()` antara lain fitur *Ball.Possesion*, jumlah partisi, dan list.
-* Mengassign hasil split ke dalam variable `trainingBallPossesion` dan `testingBallPossesion`
-* Mengecek jumlah dimensi dari data dengan method `dim()`
 
+
+1. Menggunakan library `caret` yang merupakan package untuk *Classification and Regression Training*
 ```{r}
 library(caret)
+```
+
+
+2. Melakukan data splitting dengan komposisi 70% training dan 30% testing dengan method `createDataPartition()`
+3. Mengassign hasil split ke dalam variable `trainingBallPossesion` dan `testingBallPossesion`
+4. Mengecek jumlah dimensi dari data dengan method `dim()`
+```{r}
 intrainBallPossesion <- createDataPartition(y=filteredFifa$Ball.Possession.., p=0.7, list=FALSE)
 trainingBallPossesion <- filteredFifa[intrainBallPossesion,]
 testingBallPossesion <- filteredFifa[-intrainBallPossesion,]
@@ -186,30 +190,52 @@ dim(testingBallPossesion)
 
 ```
 
-**LANGKAH 11 (SVM) :**
-
-
+5. Melakukan `set` terhadap `seed`
 ```{r}
-library(caret)
 set.seed(132)
-trainingBallPossesion[["Ball.Possession.."]] = factor(trainingBallPossesion[["Ball.Possession.."]])
-trctrlCoba <- trainControl(method = "repeatedcv", number=2, repeats = 3)
+```
 
-svm_linearCoba <- train(Ball.Possession.. ~., data = trainingBallPossesion, method = "svmLinear", 
-                        trControl = trctrlCoba,
+6. sad
+```{r}
+trainingBallPossesion[["Ball.Possession.."]] = factor(trainingBallPossesion[["Ball.Possession.."]])
+```
+
+7. Membagi data menjadi *training* dan *testing* ke dalam 5 lipatan atau **5-fold cross validation** dengan menggunakan fugsi `trainControl()`
+```{r}
+trainControl_BallPossesion <- trainControl(method = "repeatedcv", number=2, repeats = 3)
+```
+
+8. Membuat model SVM dari data `trainingBallPossesion` menggunakan fungsi `train()` dari library `caret`
+```{r}
+svmLinear_BallPossesion <- train(Ball.Possession.. ~., data = trainingBallPossesion, method = "svmLinear", 
+                        trControl = trainControl_BallPossesion,
                         preProcess = c("center", "scale"),
                         tuneLength = 10)
-
-svm_linearCoba
 ```
 
+9. Akurasi dari tiap-tiap fold dari proses _training_ sebelumnya dapat dilihat dengan
 ```{r}
-test_predCoba <- predict(svm_linearCoba, newdata =testingBallPossesion)
-test_predCoba
+svmLinear_BallPossesion$resample
 ```
 
+**Catatan dan temuan :**
+
+* dari proses pembangunan model ternyata diperoleh bahwa akurasi dari model sangatlah buruk
+* sehingga dapat disimpulkan bahwa model SVM tidak cocok untuk dataset ini
+* Mari kita lanjutkan dengan dengan menghitung prediksi dari model untuk mendukung argumen poin 2
+
+9. Melakukan prediksi terhadap model SVM setelah membangun model dengan fungsi `predict()`
 ```{r}
-svm_linearCoba$resample
-confusionMatrix(svm_linearCoba)
+prediction_BallPossesion <- predict(svmLinear_BallPossesion, newdata =testingBallPossesion)
+show(prediction_BallPossesion)
+```
+
+**Catatan dan temuan :**
+
+* dapat kita lihat bahwa nilai dari prediksi sebagian besar meleset dari data sebenarnya
+* Mari kita lanjutkan dengan melihat _confussion matrix_ model SVM
+
+```{r}
+confusionMatrix(svmLinear_BallPossesion)
 ```
 
