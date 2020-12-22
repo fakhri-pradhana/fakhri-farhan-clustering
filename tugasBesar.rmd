@@ -7,7 +7,7 @@ author : "Fakhri Ilham (18523060) & Muhammad Farhan (18523099)"
 
 **dataset yang digunakan adalah FIFA 2018 Man of the Match**
 
-dataset dapat diunduh melalui link dibawah:
+dataset dapat diunduh melalui link berikut:
 https://www.kaggle.com/mathan/fifa-2018-match-statistics
 
 **Karakteristik dataset :**
