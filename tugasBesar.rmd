@@ -1,18 +1,20 @@
 ---
-title : "Tugas Besar FSD"
+title : "FACTOR ANALYSIS dan SVM Tugas Besar FSD"
 output : html_document
 author : "Fakhri Ilham (18523060) & Muhammad Farhan (18523099)"
 ---
 
-## FACTOR ANALISYS dan SVM
 
 **dataset yang digunakan adalah FIFA 2018 Man of the Match**
 
-**data ini memiliki karakteristik :**
+dataset dapat diunduh melalui link dibawah:
+https://www.kaggle.com/mathan/fifa-2018-match-statistics
+
+**Karakteristik dataset :**
 
 1. tersusun dari 128 baris dan 27 fitur
-2. tersusun atas variable dengan data string dan numerik
-3. terdapat data yang kosong (akan dilakukan preprocessing untuk mengganti nilai menjadi 0)
+2. Merupakan dataset dengan tipe data string dan numerik
+3. Memiliki data yang kosong atau `NA` (sehingga akan dilakukan preprocessing untuk mengganti `NA` menjadi 0)
 
 ## **LANGKAH 1 (FA):**
 
@@ -89,18 +91,20 @@ corrplot(round(df1_corr, 2), method="color", col=col(200),
          addCoef.col = "black", 
          tl.col="black", tl.srt=45,
          diag=FALSE)
-round(df1_corr, 2) # Correlation matrix in table form
+round(df1_corr, 2)
 ```
 
 Setelah melakukan visualisasi matriks correlation, 
 kita tahu berapa banyak faktor yang perlu digunakan dari grafik yang diberikan di atas (yaitu 4 faktor). 
-Analisis faktor akan dilakukan dengan fungsi `fa()` dari package `psych`.
-Saat *passing parameter* : matriks korelasi, jumlah faktor, dan metode rotasi.
+
+pengambilan 4 faktor ini didasari oleh sebaran warna yang dapat terlihat secara kasat mata
+
+FA akan dilakukan dengan fungsi `fa()` dari package `psych` dengan *mem-passing parameter* : matriks korelasi, jumlah faktor, dan rotasi.
 
 ### **LANGKAH 5 (FA):**
 
 * Menggunakan library `GPArotation` dan `psych`
-* Meng-assign `nfactors` sebagai 4 berdasarkan rekomendasi dari matriks korelasi dari langkah sebelumnya
+* Meng-assign `nfactors` menjadi 4 berdasarkan rekomendasi dari matriks korelasi dari langkah sebelumnya
 ```{r}
 library('GPArotation')
 library(psych)
@@ -135,11 +139,11 @@ plot(load, type="n")
 text(load,labels=names(factors),cex=.7) 
 ```
 
-Terlihat dalam plot, sebaran factor loading yang nilainya sangat variatif bahkan ada yang bernilai negatif
+Terlihat dalam plot, sebaran **factor loading** memiliki nilai yang sangat variatif
 
 ### **LANGKAH 8 (FA):**
 
-Untuk dapat menentukan jumlah faktor, kita dapat menggunakan bantuan scree plot apabila kita tida memiliki dasar ilmiah untuk menentukan jumlah faktor. 
+Terdapa cara lain untuk dapat menentukan jumlah faktor, kita dapat menggunakan bantuan **scree plot** apabila kita tidak memiliki dasar ilmiah untuk menentukan jumlah faktor. 
 
 ```{r}
 library('psy')
@@ -149,14 +153,14 @@ scree.plot(df1_corr)
 **Temuan dari Screeplot :**
 
 * jumlah faktor yang disarankan adalah 3 faktor
-* hal ini juga telah dibuktikan dalam plotting FA yang menunjukkan bahwa faktor ke-4 sangat sedikit menunjukkan hubungannya dengan fitur-fitur terkait, bahkan ada yang bernilai negatif.
+* hal ini juga menjadi alasan mengapa plotting FA sebelumnya (dengan metode **Correlation Matrix** menunjukkan bahwa faktor ke-4 sangat sedikit menunjukkan hubungannya dengan fitur-fitur terkait, bahkan ada yang bernilai negatif.
 
 
 ### **LANGKAH 9 (SVM) :**
 
 Membuat variable R baru dengan nama `filteredFifa`, dengan memasukkan beberapa fitur dari dataset berbekal pengetahuan yang didapatkan dari FA
 
-Pengetahuan yand didapatkan adalah memilih 4 fitur dengan nilai terbesar untuk dijadikan sebagai data training dan testing dalam SVM
+Pengetahuan yand didapatkan adalah memilih 4 fitur dengan nilai terbesar untuk dijadikan sebagai **data training** dan **data testing** dalam SVM
 
 ```{r}
 library(psych)
@@ -165,9 +169,9 @@ filteredFifa <- myData[,c(5, 10, 17, 12)]
 head(filteredFifa)
 ```
 
-### **LANGKAH 10 (SVM) :**
+### **LANGKAH 10 (SVM Fitur Ball.Possesion) :**
 
-#### **Melakukan training dan testing terhadap fitur _Ball.Possesion_**
+#### **Melakukan training dan testing terhadap fitur _Ball.Possesion_ yang merupakan perwakilan dari Factor pertama**
 
 
 
@@ -238,4 +242,90 @@ show(prediction_BallPossesion)
 ```{r}
 confusionMatrix(svmLinear_BallPossesion)
 ```
+
+**Catatan dan temuan :**
+
+* dapat kita simpulkan bahwa model SVM tidak disarankan untuk dataset ini karena akurasi memang terbukti sangat rendah dilihat dari nilai `Accuracy (average)` diatas
+* Mari kita buat model SVM untuk kasus fitur lain
+
+
+### **LANGKAH 11 (SVM Fitur Corners) :**
+
+#### **Melakukan training dan testing terhadap fitur _Corners_ yang merupakan perwakilan dari Factor kedua**
+
+1. Menggunakan library `caret` yang merupakan package untuk *Classification and Regression Training*
+```{r}
+library(caret)
+```
+
+
+2. Melakukan data splitting dengan komposisi 70% training dan 30% testing dengan method `createDataPartition()`
+3. Mengassign hasil split ke dalam variable `trainingCorners` dan `testingCorners`
+4. Mengecek jumlah dimensi dari data dengan method `dim()`
+```{r}
+intrainCorners <- createDataPartition(y=filteredFifa$Corners, p=0.7, list=FALSE)
+trainingCorners <- filteredFifa[intrainCorners,]
+testingCorners <- filteredFifa[-intrainCorners,]
+
+dim(trainingCorners)
+dim(testingCorners)
+
+```
+
+5. Melakukan `set` terhadap `seed`
+```{r}
+set.seed(132)
+```
+
+6. sad
+```{r}
+trainingCorners[["Corners"]] = factor(trainingCorners[["Corners"]])
+```
+
+7. Membagi data menjadi *training* dan *testing* ke dalam 5 lipatan atau **5-fold cross validation** dengan menggunakan fugsi `trainControl()`
+```{r}
+trainControl_Corners <- trainControl(method = "repeatedcv", number=2, repeats = 3)
+```
+
+8. Membuat model SVM dari data `trainingCorners` menggunakan fungsi `train()` dari library `caret`
+```{r}
+svmLinear_Corners <- train(Corners ~., data = trainingCorners, method = "svmLinear", 
+                        trControl = trainControl_Corners,
+                        preProcess = c("center", "scale"),
+                        tuneLength = 10)
+```
+
+9. Akurasi dari tiap-tiap fold dari proses _training_ sebelumnya dapat dilihat dengan
+```{r}
+svmLinear_Corners$resample
+```
+
+**Catatan dan temuan :**
+
+* dari proses pembangunan model ternyata diperoleh bahwa akurasi dari model dengan fitur Corners masih terbilang rendah
+* sehingga dapat disimpulkan bahwa model SVM masih belum direkomendasikan untuk dataset ini
+* Mari kita lanjutkan dengan dengan menghitung prediksi dari model untuk mendukung argumen poin 2
+
+9. Melakukan prediksi terhadap model SVM setelah membangun model dengan fungsi `predict()`
+```{r}
+prediction_Corners <- predict(svmLinear_Corners, newdata =testingCorners)
+show(prediction_Corners)
+show(testingCorners$Corners)
+```
+
+**Catatan dan temuan :**
+
+* dapat kita lihat bahwa nilai dari prediksi sebagian besar meleset dari data sebenarnya
+* Mari kita lanjutkan dengan melihat _confussion matrix_ model SVM dengan fitur Corners ini
+
+```{r}
+confusionMatrix(svmLinear_Corners)
+```
+
+**Catatan dan temuan :**
+
+* dapat kita simpulkan bahwa model SVM tidak disarankan untuk dataset ini karena akurasi memang masih terbukti sangat rendah dilihat dari nilai `Accuracy (average)` diatas
+* Sehingga dapat disimpulkan SVM juga tidak cocok untuk fitur lain dari dataset ini
+
+
 
