@@ -14,7 +14,7 @@ author : "Fakhri Ilham (18523060) & Muhammad Farhan (18523099)"
 2. tersusun atas variable dengan data string dan numerik
 3. terdapat data yang kosong (akan dilakukan preprocessing untuk mengganti nilai menjadi 0)
 
-**LANGKAH 1 :**
+## **LANGKAH 1 (FA):**
 
 * Melakukan import dataset dengan membaca csv yang berlokasi dalam satu folder proyek
 * mereduksi fitur dengan feature selection `c(4:20, 22)`
@@ -24,12 +24,13 @@ author : "Fakhri Ilham (18523060) & Muhammad Farhan (18523099)"
 library(psych)
 myData <- read.csv("FIFA 2018 Statistics.csv")
 fifa_results <- myData[,c(4:20, 22)]
+
 fifa_results$X1st.Goal[is.na(fifa_results$X1st.Goal)] <- 0
 
 head(fifa_results)
 ```
 
-**LANGKAH 2 :**
+## **LANGKAH 2 (FA):**
 
 Cari tahu variabel mana yang dapat dipertimbangkan untuk FA:
 
@@ -50,7 +51,7 @@ KMO(df_corr)
 * Variabel dengan MSA> 0.6 akan cocok, 
 * variabel dengan MSA> 0.8 akan sangat cocok untuk Factor Analysis 
 
-Dengan melakukan langkah diatas kita dapat mengeliminasi variabel :
+Dengan catatan diatas kita dapat mengeliminasi variabel :
 
 * "On.Target", 
 * "Off.Target", 
@@ -61,16 +62,16 @@ Dengan melakukan langkah diatas kita dapat mengeliminasi variabel :
 * "Red", 
 * "first_goal"
 
-**LANGKAH 3 :**
+## **LANGKAH 3 (FA):**
 
-Mengeliminasi variable yang tidak dibutuhkan
+Mengeliminasi variable yang tidak dibutuhkan dengan memilih fitur `c(1:3, 7, 9:12, 14:15, 17)`
 
 ```{r}
 df1_fifaRes <- fifa_results[,c(1:3, 7, 9:12, 14:15, 17)]
 head(df1_fifaRes)
 ```
 
-**LANGKAH 4 :**
+## **LANGKAH 4 (FA):**
 
 * Membuat matriks korelasi dengan variable yang sudah dipilih dari `df1_fifaRes`
 * Memberi warna untuk mempermudah visualisasi 
@@ -94,9 +95,9 @@ round(df1_corr, 2) # Correlation matrix in table form
 Setelah melakukan visualisasi matriks correlation, 
 kita tahu berapa banyak faktor yang perlu digunakan dari grafik yang diberikan di atas (yaitu 4 faktor). 
 Analisis faktor akan dilakukan dengan fungsi `fa()` dari package `psych`.
-Saat parameter dilewatkan: matriks korelasi, jumlah faktor, dan metode rotasi.
+Saat *passing parameter* : matriks korelasi, jumlah faktor, dan metode rotasi.
 
-**LANGKAH 5 :**
+## **LANGKAH 5 (FA):**
 
 * Menggunakan library `GPArotation` dan `psych`
 * Meng-assign `nfactors` sebagai 4 berdasarkan rekomendasi dari matriks korelasi dari langkah sebelumnya
@@ -109,94 +110,92 @@ factors <- fa(r = df1_corr, nfactors = nfactors, rotate = "Varimax")
 factors
 ```
 
-LANGKAH N :
 
-```{r}
-##library(psych)
-#modelFA <- fa(r = factors, nfactors = 4, rotate = "varimax", fm="minres")
-#modelFA$loadings
-```
+## **LANGKAH 6 (FA):**
 
+Melakukan plotting untuk mendapatkan visualisasi FA
 
-
-LANGKAH N :
-Melakukan visualisasi 
 ```{r}
 load <- factors$loadings[,1:4] 
 fa.diagram(factors, digits = 2)
 ```
 
+**Temuan dari plotting :**
 
-LANGKAH N :
+Setelah melakukan plotting kita mendapatkan bahwa :
+
+* **Faktor 1** : Kontrol Permainan ('Ball Possesion', 'Passes', dan 'Pass Accuracy')
+* **Faktor 2** : Teknik Penyerangan ('Corners' dan 'Attempts')
+* **Faktor 3** : Peraturan permainan ('Fouls Committed', dan 'Yellow Card')
+* **Faktor 4** : Lain-lain ( 'Free Kicks' ,dan 'Saves') dan memiliki nilai negatif
+
+## **LANGKAH 7 (FA):**
 ```{r}
 plot(load, type="n")
 text(load,labels=names(factors),cex=.7) 
 ```
 
+Terlihat dalam plot, sebaran factor loading yang nilainya sangat variatif bahkan ada yang bernilai negatif
 
+## **LANGKAH 8 (FA):**
+
+Untuk dapat menentukan jumlah faktor, kita dapat menggunakan bantuan scree plot apabila kita tida memiliki dasar ilmiah untuk menentukan jumlah faktor. 
 
 ```{r}
 library('psy')
 scree.plot(df1_corr)
 ```
 
-```{r}
-library(ggplot2)
-# Plot Eigenvalues / Represented Variance
-eigenvalues <- data.frame(factors$e.values)
-colnames(eigenvalues) <- c("Values")
-eigenvalues$Number <- 1:nrow(df1_corr)
+**Temuan dari Screeplot :**
 
-eigenvalues$RepresentedVariance <- NA
-for (i in 1:nrow(df1_corr)) {
-    eigenvalues$RepresentedVariance[i] <- sum(eigenvalues$Values[1:i])/sum(eigenvalues$Values) * 
-        100
-}
-eigenvalues$RepresentedVariance_text <- paste(round(eigenvalues$RepresentedVariance, 
-    0), " %")
-
-e1 <- ggplot(eigenvalues, aes(Number, y = Values), group = 1)
-e1 <- e1 + geom_bar(stat = "identity")
-e1 <- e1 + geom_line(aes(y = Values), group = 2)
-e1 <- e1 + xlab("Number [-]")
-e1 <- e1 + ylab("Eigenvalue [-]")
-e1 <- e1 + geom_hline(aes(yintercept = 1), col = "red")
-e1 <- e1 + geom_text(aes(label = RepresentedVariance_text), nudge_y = 0.2)
-e1 <- e1 + ggtitle("Eigenvalues and explained Variance")
-e1 <- e1 + theme_bw()
-e1 <- e1 + scale_x_continuous(breaks = seq(1, 10, 1))
-e1
-```
+* jumlah faktor yang disarankan adalah 3 faktor
+* hal ini juga telah dibuktikan dalam plotting FA yang menunjukkan bahwa faktor ke-4 sangat sedikit menunjukkan hubungannya dengan fitur-fitur terkait, bahkan ada yang bernilai negatif.
 
 
-  
+## **LANGKAH 9 (SVM) :**
+
+Membuat variable R baru dengan nama `filteredFifa`, dengan memasukkan beberapa fitur dari dataset berbekal pengetahuan yang didapatkan dari FA
+
+Pengetahuan yand didapatkan adalah memilih 4 fitur dengan nilai terbesar untuk dijadikan sebagai data training dan testing dalam SVM
+
 ```{r}
 library(psych)
-filteredFifa <- myData[,c(5, 15, 14, 10, 6)]
+filteredFifa <- myData[,c(5, 10, 17, 12)]
 
 head(filteredFifa)
 ```
 
+## **LANGKAH 10 (SVM) :**
+
+### **Melakukan training dan testing terhadap fitur _Ball.Possesion_**
+
+* Menggunakan library `caret` yang merupakan package untuk *Classification and Regression Training*
+* Melakukan data splitting dengan komposisi 70% training dan 30% testing dengan method `createDataPartition()`
+* Parameter method `createDataPartition()` antara lain fitur *Ball.Possesion*, jumlah partisi, dan list.
+* Mengassign hasil split ke dalam variable `trainingBallPossesion` dan `testingBallPossesion`
+* Mengecek jumlah dimensi dari data dengan method `dim()`
+
 ```{r}
 library(caret)
-cobaIntrain <- createDataPartition(y=filteredFifa$Ball.Possession.., p=0.7, list=FALSE)
-cobaTraining <- filteredFifa[cobaIntrain,]
-cobaTesting <- filteredFifa[-cobaIntrain,]
+intrainBallPossesion <- createDataPartition(y=filteredFifa$Ball.Possession.., p=0.7, list=FALSE)
+trainingBallPossesion <- filteredFifa[intrainBallPossesion,]
+testingBallPossesion <- filteredFifa[-intrainBallPossesion,]
 
-dim(cobaTraining)
-dim(cobaTesting)
+dim(trainingBallPossesion)
+dim(testingBallPossesion)
 
-show(cobaTraining)
-show(cobaTesting)
 ```
+
+**LANGKAH 11 (SVM) :**
+
 
 ```{r}
 library(caret)
 set.seed(132)
-cobaTraining[["Ball.Possession.."]] = factor(cobaTraining[["Ball.Possession.."]])
+trainingBallPossesion[["Ball.Possession.."]] = factor(trainingBallPossesion[["Ball.Possession.."]])
 trctrlCoba <- trainControl(method = "repeatedcv", number=2, repeats = 3)
 
-svm_linearCoba <- train(Ball.Possession.. ~., data = cobaTraining, method = "svmLinear", 
+svm_linearCoba <- train(Ball.Possession.. ~., data = trainingBallPossesion, method = "svmLinear", 
                         trControl = trctrlCoba,
                         preProcess = c("center", "scale"),
                         tuneLength = 10)
@@ -205,7 +204,7 @@ svm_linearCoba
 ```
 
 ```{r}
-test_predCoba <- predict(svm_linearCoba, newdata =cobaTesting)
+test_predCoba <- predict(svm_linearCoba, newdata =testingBallPossesion)
 test_predCoba
 ```
 
